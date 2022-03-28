@@ -1,10 +1,4 @@
-const db = require("./db/connection");
-
-exports.fetchTopics = () => {
-  return db.query("SELECT * FROM topics").then((result) => {
-    return result.rows;
-  });
-};
+const db = require("../db/connection");
 
 exports.fetchArticleById = (article_id) => {
   return db

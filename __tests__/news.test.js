@@ -116,3 +116,19 @@ describe("PATCH/api/articles/:article_id", () => {
       .then((result) => {});
   });
 });
+
+describe("GET/api/users", () => {
+  test("responds with array of user objects with correct properties", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((result) => {
+        expect(result.body.users).toBeInstanceOf(Array);
+        result.body.users.forEach((user) => {
+          expect(user).toMatchObject({
+            username: expect.any(String),
+          });
+        });
+      });
+  });
+});

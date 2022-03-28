@@ -20,10 +20,10 @@ exports.changeArticleById = (article_id, inc_votes) => {
         [inc_votes, article_id]
       )
       .then((result) => {
-        if (result.rows.length) {
-          return result.rows[0];
+        if (!result.rows.length) {
+          return Promise.reject({ status: 404, msg: "Article not found" });
         } else {
-          return Promise.reject({ status: 404, msg: "Invalid article_id" });
+          return result.rows[0];
         }
       });
   } else {

@@ -95,14 +95,23 @@ describe("PATCH/api/articles/:article_id", () => {
   test("responds with correct error message", () => {
     return request(app)
       .patch("/api/articles/9999")
-      .send({ inc_votes: -10 })
+      .send({ inc_votes: 10 })
       .expect(404)
-      .then((result) => {});
+      .then((result) => {
+        expect(result.text).toBe("Article not found");
+      });
   });
   test("responds with correct error message for incorrect patch body", () => {
     return request(app)
       .patch("/api/articles/1")
       .send({ votes: -10 })
+      .expect(400)
+      .then((result) => {});
+  });
+  test("responds with correct error message for incorrect patch body", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: "cheese" })
       .expect(400)
       .then((result) => {});
   });

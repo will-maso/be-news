@@ -20,7 +20,7 @@ exports.changeArticleById = (article_id, inc_votes) => {
         [inc_votes, article_id]
       )
       .then((result) => {
-        if (result.rows.length > 0) {
+        if (result.rows.length) {
           return result.rows[0];
         } else {
           return Promise.reject({ status: 404, msg: "Invalid article_id" });

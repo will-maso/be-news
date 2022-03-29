@@ -22,7 +22,7 @@ describe("Get/api/topics", () => {
         });
       });
   });
-  test("responds with correct error message", () => {
+  test("responds with correct error message for 404", () => {
     return request(app).get("/api/slug").expect(404);
   });
 });
@@ -46,7 +46,7 @@ describe("GET/api/articles/:article_id", () => {
         });
       });
   });
-  test("responds with correct error message", () => {
+  test("responds with correct error message for 404", () => {
     return request(app)
       .get("/api/articles/9999")
       .expect(404)
@@ -93,7 +93,7 @@ describe("PATCH/api/articles/:article_id", () => {
         expect(result.body.article.votes).toBe(90);
       });
   });
-  test("responds with correct error message", () => {
+  test("responds with correct error message for 404", () => {
     return request(app)
       .patch("/api/articles/9999")
       .send({ inc_votes: 10 })
@@ -177,7 +177,7 @@ describe("GET/api/articles", () => {
   });
 });
 
-describe.only("GET/api/articles/:article_id/comments", () => {
+describe("GET/api/articles/:article_id/comments", () => {
   test("responds with array of comments with correct properties", () => {
     return request(app)
       .get("/api/articles/1/comments")
@@ -195,7 +195,7 @@ describe.only("GET/api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("responds with correct error message", () => {
+  test("responds with correct error message for datatype", () => {
     return request(app)
       .get("/api/articles/cheese/comments")
       .expect(400)
@@ -205,7 +205,7 @@ describe.only("GET/api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("responds with correct error message", () => {
+  test("responds with correct error message for 404", () => {
     return request(app)
       .get("/api/articles/1000/comments")
       .expect(404)
@@ -213,13 +213,89 @@ describe.only("GET/api/articles/:article_id/comments", () => {
         expect(result.text).toBe("article not found");
       });
   });
-  test("responds with correct error message", () => {
+  test("responds with empty array for article without comments", () => {
     return request(app)
       .get("/api/articles/2/comments")
       .expect(200)
       .then((result) => {
         expect(result.body.comments).toBeInstanceOf(Array);
         expect(result.body.comments.length).toBe(0);
+      });
+  });
+});
+
+describe.only("POST/api/articles/:article_id/comments", () => {
+  test("responds with posted comment in correct format", () => {
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send({
+        username: "butter_bridge",
+        body: "this is great",
+      })
+      .expect(200)
+      .then((result) => {
+        expect(result.body.comment).toBeInstanceOf(Object);
+        expect(result.body.comment).toMatchObject({
+          comment_id: expect.any(Number),
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+        });
+      });
+  });
+  test("responds with correct error message for datatype", () => {
+    return request(app)
+      .post("/api/articles/cheese/comments")
+      .send({
+        username: "butter_bridge",
+        body: "this is great",
+      })
+      .expect(400)
+      .then((result) => {
+        expect(result.body).toEqual({
+          msg: "Invalid data type for body or request",
+        });
+      });
+  });
+  test("responds with correct error message for 404", () => {
+    return request(app)
+      .post("/api/articles/1000/comments")
+      .send({
+        username: "butter_bridge",
+        body: "this is great",
+      })
+      .expect(404)
+      .then((result) => {
+        expect(result.text).toBe("article not found");
+      });
+  });
+  test("responds with correct error message for psql error", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({
+        name: "butter_bridge",
+        body: "this is great",
+      })
+      .expect(400)
+      .then((result) => {
+        expect(result.body).toMatchObject({
+          msg: "Invalid data type for body or request",
+        });
+      });
+  });
+  test("responds with correct error message for incorrect username", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({
+        username: "will",
+        body: "best thing since sliced bread",
+      })
+      .expect(400)
+      .then((result) => {
+        expect(result.body).toMatchObject({
+          msg: "Input in body does not exist in database",
+        });
       });
   });
 });

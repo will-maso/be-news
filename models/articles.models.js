@@ -68,3 +68,28 @@ exports.fetchCommentsById = (article_id) => {
       }
     });
 };
+
+exports.addCommentById = (article_id, body, username) => {
+  return db
+    .query("SELECT * FROM articles WHERE article_id = $1", [article_id])
+    .then((result) => {
+      if (result.rows.length) {
+        return db
+          .query(
+            "INSERT INTO comments (article_id, body, author) VALUES ($1, $2, $3)",
+            [article_id, body, username]
+          )
+          .then(() => {
+            return db
+              .query(`SELECT * FROM comments WHERE article_id = $1;`, [
+                article_id,
+              ])
+              .then((result) => {
+                return result.rows[0];
+              });
+          });
+      } else {
+        return Promise.reject({ status: 404, msg: "article not found" });
+      }
+    });
+};

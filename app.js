@@ -8,6 +8,7 @@ const {
   patchArticleById,
   getArticles,
   getCommentsById,
+  postCommentById,
 } = require("./controllers/articles.controllers");
 const { getUsers } = require("./controllers/users.controllers");
 
@@ -17,14 +18,18 @@ app.patch("/api/articles/:article_id", patchArticleById);
 app.get("/api/users", getUsers);
 app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id/comments", getCommentsById);
+app.post("/api/articles/:article_id/comments", postCommentById);
 
 app.all("/*", (req, res) => {
   res.status(404).send({ msg: "Route not found" });
 });
 
 app.use((err, req, res, next) => {
-  if (err.code === "22P02") {
+  const badReq = ["23502", "22P02"];
+  if (badReq.includes(err.code)) {
     res.status(400).send({ msg: "Invalid data type for body or request" });
+  } else if (err.code === "23503") {
+    res.status(400).send({ msg: "Input in body does not exist in database" });
   } else {
     next(err);
   }

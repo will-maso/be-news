@@ -2,6 +2,7 @@ const {
   fetchArticleById,
   changeArticleById,
   fetchArticles,
+  fetchCommentsById,
 } = require("../models/articles.models");
 
 exports.getArticleById = (req, res, next) => {
@@ -31,6 +32,17 @@ exports.patchArticleById = (req, res, next) => {
   changeArticleById(article_id, inc_votes)
     .then((result) => {
       res.send({ article: result });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getCommentsById = (req, res, next) => {
+  const { article_id } = req.params;
+  fetchCommentsById(article_id)
+    .then((result) => {
+      res.send({ comments: result });
     })
     .catch((err) => {
       next(err);

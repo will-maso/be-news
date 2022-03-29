@@ -58,6 +58,9 @@ exports.fetchArticles = async (
     "votes",
   ];
   const validorder = ["asc", "desc"];
+  if (!validsort_by.includes(sort_by) && validorder.includes(order)) {
+    return Promise.reject({ status: 400, msg: "incorrect sort_by or order" });
+  }
   let querystr = `SELECT articles.*, COUNT(comments.article_id)::INTEGER AS comment_count
     FROM comments
     LEFT JOIN articles
@@ -67,11 +70,7 @@ exports.fetchArticles = async (
     queryValues.push(topic);
   }
   querystr += ` GROUP BY articles.article_id`;
-  if (validsort_by.includes(sort_by) && validorder.includes(order)) {
-    querystr += ` ORDER BY ${sort_by} ${order};`;
-  } else {
-    return Promise.reject({ status: 400, msg: "incorrect sort_by or order" });
-  }
+  querystr += ` ORDER BY ${sort_by} ${order};`;
   if (topic) {
     if (queryValues.length) {
       const result = await db.query(querystr, queryValues);

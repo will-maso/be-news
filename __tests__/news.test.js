@@ -134,7 +134,7 @@ describe("GET/api/users", () => {
   });
 });
 
-describe.only("GET/api/articles/article_id   comment count", () => {
+describe("GET/api/articles/article_id   comment count", () => {
   test("responds with article object with correct comment count", () => {
     return request(app)
       .get("/api/articles/1")
@@ -150,6 +150,28 @@ describe.only("GET/api/articles/article_id   comment count", () => {
           created_at: expect.any(String),
           votes: expect.any(Number),
           comment_count: expect.any(Number),
+        });
+      });
+  });
+});
+
+describe("GET/api/articles", () => {
+  test("response with array of article objects with correct properties", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((result) => {
+        expect(result.body.articles).toBeInstanceOf(Array);
+        result.body.articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            comment_count: expect.any(Number),
+          });
         });
       });
   });

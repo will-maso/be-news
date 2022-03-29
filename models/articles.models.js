@@ -58,7 +58,7 @@ exports.fetchArticles = async (
     "votes",
   ];
   const validorder = ["asc", "desc"];
-  if (!validsort_by.includes(sort_by) && validorder.includes(order)) {
+  if (!validsort_by.includes(sort_by) || !validorder.includes(order)) {
     return Promise.reject({ status: 400, msg: "incorrect sort_by or order" });
   }
   let querystr = `SELECT articles.*, COUNT(comments.article_id)::INTEGER AS comment_count

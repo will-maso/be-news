@@ -39,18 +39,48 @@ exports.changeArticleById = (article_id, inc_votes) => {
   }
 };
 
-exports.fetchArticles = () => {
-  return db
-    .query(
-      `SELECT articles.*, COUNT(comments.article_id)::INTEGER AS comment_count
+// db.query("SELECT ARRAY_AGG(topic) FROM articles ORDER BY topic");
+
+exports.fetchArticles = async (
+  sort_by = "created_at",
+  order = "desc",
+  topic
+) => {
+  const queryValues = [];
+  const Topics = await db.query("SELECT slug FROM topics;");
+  const validTopics = Topics.rows.map((topic) => topic.slug);
+  const validsort_by = [
+    "created_at",
+    "title",
+    "topic",
+    "author",
+    "body",
+    "votes",
+  ];
+  const validorder = ["asc", "desc"];
+  if (!validsort_by.includes(sort_by) || !validorder.includes(order)) {
+    return Promise.reject({ status: 400, msg: "incorrect sort_by or order" });
+  }
+  let querystr = `SELECT articles.*, COUNT(comments.article_id)::INTEGER AS comment_count
     FROM comments
     LEFT JOIN articles
-    ON articles.article_id = comments.article_id
-    GROUP BY articles.article_id;`
-    )
-    .then((result) => {
+    ON articles.article_id = comments.article_id`;
+  if (validTopics.includes(topic)) {
+    querystr += ` WHERE articles.topic = $1`;
+    queryValues.push(topic);
+  }
+  querystr += ` GROUP BY articles.article_id`;
+  querystr += ` ORDER BY ${sort_by} ${order};`;
+  if (topic) {
+    if (queryValues.length) {
+      const result = await db.query(querystr, queryValues);
       return result.rows;
-    });
+    } else {
+      return Promise.reject({ status: 404, msg: "this topic does not exist" });
+    }
+  }
+  const result = await db.query(querystr, queryValues);
+  return result.rows;
 };
 
 exports.fetchCommentsById = (article_id) => {

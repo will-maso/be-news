@@ -155,7 +155,7 @@ describe("GET/api/articles/article_id   comment count", () => {
   });
 });
 
-describe.only("GET/api/articles", () => {
+describe("GET/api/articles", () => {
   test("response with array of article objects with correct properties", () => {
     return request(app)
       .get("/api/articles")

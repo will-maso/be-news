@@ -155,7 +155,7 @@ describe("GET/api/articles/article_id   comment count", () => {
   });
 });
 
-describe("GET/api/articles", () => {
+describe.only("GET/api/articles", () => {
   test("response with array of article objects with correct properties", () => {
     return request(app)
       .get("/api/articles")
@@ -173,6 +173,41 @@ describe("GET/api/articles", () => {
             comment_count: expect.any(Number),
           });
         });
+      });
+  });
+  test("endpoint works as intended with default queries", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((result) => {
+        expect(result.body.articles).toBeInstanceOf(Array);
+        expect(result.body.articles).toBeSortedBy("created_at", {
+          descending: true,
+        });
+      });
+  });
+  test("endpoint works as intended with topic", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then((result) => {
+        expect(result.body.articles.length).toBe(1);
+      });
+  });
+  test("responds with correct error message for incorrect query", () => {
+    return request(app)
+      .get("/api/articles?topic=will")
+      .expect(404)
+      .then((result) => {
+        expect(result.text).toBe("this topic does not exist");
+      });
+  });
+  test("responds with correct error message for incorrect datatype", () => {
+    return request(app)
+      .get("/api/articles?sort_by=2")
+      .expect(400)
+      .then((result) => {
+        expect(result.text).toBe("incorrect sort_by or order");
       });
   });
 });
@@ -224,7 +259,7 @@ describe("GET/api/articles/:article_id/comments", () => {
   });
 });
 
-describe.only("POST/api/articles/:article_id/comments", () => {
+describe("POST/api/articles/:article_id/comments", () => {
   test("responds with posted comment in correct format", () => {
     return request(app)
       .post("/api/articles/2/comments")

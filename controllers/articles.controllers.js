@@ -1,6 +1,7 @@
 const {
   fetchArticleById,
   changeArticleById,
+  fetchArticles,
 } = require("../models/articles.models");
 
 exports.getArticleById = (req, res, next) => {
@@ -8,6 +9,16 @@ exports.getArticleById = (req, res, next) => {
   fetchArticleById(article_id)
     .then((result) => {
       res.send({ article: result });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getArticles = (req, res, next) => {
+  fetchArticles()
+    .then((result) => {
+      res.send({ articles: result });
     })
     .catch((err) => {
       next(err);

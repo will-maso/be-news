@@ -155,7 +155,7 @@ describe("GET/api/articles/article_id   comment count", () => {
   });
 });
 
-describe.only("GET/api/articles", () => {
+describe("GET/api/articles", () => {
   test("response with array of article objects with correct properties", () => {
     return request(app)
       .get("/api/articles")
@@ -332,5 +332,26 @@ describe("POST/api/articles/:article_id/comments", () => {
           msg: "Input in body does not exist in database",
         });
       });
+  });
+});
+
+describe.only("DELETE/api/comments/:comment_id", () => {
+  test("works as intended", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(() => {});
+  });
+  test("returns 404 not found for invalid comment_id", () => {
+    return request(app)
+      .delete("/api/comments/1000")
+      .expect(404)
+      .then(() => {});
+  });
+  test("returns 400 for wrong datatype in comment_id", () => {
+    return request(app)
+      .delete("/api/comments/cheese")
+      .expect(400)
+      .then(() => {});
   });
 });

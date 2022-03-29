@@ -177,7 +177,7 @@ describe("GET/api/articles", () => {
   });
 });
 
-describe("GET/api/articles/:article_id/comments", () => {
+describe.only("GET/api/articles/:article_id/comments", () => {
   test("responds with array of comments with correct properties", () => {
     return request(app)
       .get("/api/articles/1/comments")
@@ -199,13 +199,19 @@ describe("GET/api/articles/:article_id/comments", () => {
     return request(app)
       .get("/api/articles/cheese/comments")
       .expect(400)
-      .then((result) => {});
+      .then((result) => {
+        expect(result.body).toEqual({
+          msg: "Invalid data type for body or request",
+        });
+      });
   });
   test("responds with correct error message", () => {
     return request(app)
       .get("/api/articles/1000/comments")
       .expect(404)
-      .then((result) => {});
+      .then((result) => {
+        expect(result.text).toBe("article not found");
+      });
   });
   test("responds with correct error message", () => {
     return request(app)

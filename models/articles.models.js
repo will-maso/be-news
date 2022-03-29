@@ -39,9 +39,16 @@ exports.changeArticleById = (article_id, inc_votes) => {
   }
 };
 
-exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
+// db.query("SELECT ARRAY_AGG(topic) FROM articles ORDER BY topic");
+
+exports.fetchArticles = async (
+  sort_by = "created_at",
+  order = "desc",
+  topic
+) => {
   const queryValues = [];
-  const validTopics = ["mitch", "cats"];
+  const Topics = await db.query("SELECT slug FROM topics;");
+  const validTopics = Topics.rows.map((topic) => topic.slug);
   const validsort_by = [
     "created_at",
     "title",
@@ -67,16 +74,14 @@ exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
   }
   if (topic) {
     if (queryValues.length) {
-      return db.query(querystr, queryValues).then((result) => {
-        return result.rows;
-      });
+      const result = await db.query(querystr, queryValues);
+      return result.rows;
     } else {
       return Promise.reject({ status: 404, msg: "this topic does not exist" });
     }
   }
-  return db.query(querystr, queryValues).then((result) => {
-    return result.rows;
-  });
+  const result = await db.query(querystr, queryValues);
+  return result.rows;
 };
 
 exports.fetchCommentsById = (article_id) => {

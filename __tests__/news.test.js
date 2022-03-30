@@ -3,6 +3,7 @@ const testData = require("../db/data/test-data");
 const db = require("../db/connection");
 const app = require("../app");
 const request = require("supertest");
+const data = require("../endpoints.js");
 
 afterAll(() => db.end());
 beforeEach(() => seed(testData));
@@ -335,7 +336,7 @@ describe("POST/api/articles/:article_id/comments", () => {
   });
 });
 
-describe.only("DELETE/api/comments/:comment_id", () => {
+describe("DELETE/api/comments/:comment_id", () => {
   test("works as intended", () => {
     return request(app)
       .delete("/api/comments/1")
@@ -353,5 +354,16 @@ describe.only("DELETE/api/comments/:comment_id", () => {
       .delete("/api/comments/cheese")
       .expect(400)
       .then(() => {});
+  });
+});
+
+describe.only("GET/api", () => {
+  test("works as intended", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then((result) => {
+        expect(result.body).toEqual(data);
+      });
   });
 });

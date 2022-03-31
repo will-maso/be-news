@@ -367,3 +367,27 @@ describe("GET/api", () => {
       });
   });
 });
+
+describe.only("GET/users/:username", () => {
+  test("works as intended", () => {
+    return request(app)
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then((result) => {
+        expect(result.body.user).toMatchObject({
+          username: "butter_bridge",
+          name: "jonny",
+          avatar_url:
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+        });
+      });
+  });
+  test("responds with correct error message for incorrect username", () => {
+    return request(app)
+      .get("/api/users/william")
+      .expect(404)
+      .then((result) => {
+        expect(result.text).toBe("this username doesn't exist");
+      });
+  });
+});

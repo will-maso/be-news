@@ -211,6 +211,32 @@ describe("GET/api/articles", () => {
         expect(result.text).toBe("incorrect sort_by or order");
       });
   });
+  test("responds with correct results when limited and offset", () => {
+    return request(app)
+      .get("/api/articles?limit=1&page=1")
+      .expect(200)
+      .then((result) => {});
+  });
+  test("responds with correct results when limited and offset", () => {
+    return request(app)
+      .get("/api/articles?limit=cheese&page=1")
+      .expect(400)
+      .then((result) => {
+        expect(result.body).toEqual({
+          msg: "Invalid data type for body or request",
+        });
+      });
+  });
+  test("responds with correct results when limited and offset", () => {
+    return request(app)
+      .get("/api/articles?limit=1&page=cheese")
+      .expect(400)
+      .then((result) => {
+        expect(result.body).toEqual({
+          msg: "Invalid data type for body or request",
+        });
+      });
+  });
 });
 
 describe("GET/api/articles/:article_id/comments", () => {
@@ -442,5 +468,51 @@ describe("PATCH/api/comments/:comment_id", () => {
       .then((result) => {
         expect(result.text).toBe("Invalid PATCH body");
       });
+  });
+});
+
+describe("POST/articles", () => {
+  test("responds with posted article when given correct input", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "butter_bridge",
+        title: "cats are great",
+        body: "aren't they just",
+        topic: "cats",
+      })
+      .expect(201)
+      .then((result) => {
+        expect(result.body.article).toMatchObject({
+          author: "butter_bridge",
+          title: "cats are great",
+          body: "aren't they just",
+          topic: "cats",
+          article_id: expect.any(Number),
+          votes: 0,
+          created_at: expect.any(String),
+        });
+      });
+  });
+  test("responds with correct error messages", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "butter_bridge",
+        title: "cats are great",
+        body: "aren't they just",
+      })
+      .expect(400);
+  });
+  test("responds with correct error messages", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "butter_bridge",
+        title: "cats are great",
+        body: "aren't they just",
+        topic: 2,
+      })
+      .expect(400);
   });
 });

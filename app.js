@@ -9,7 +9,7 @@ app.all("/*", (req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  const badReq = ["23502", "22P02"];
+  const badReq = ["23502", "22P02", "42703"];
   if (badReq.includes(err.code)) {
     res.status(400).send({ msg: "Invalid data type for body or request" });
   } else if (err.code === "23503") {

@@ -4,6 +4,7 @@ const {
   fetchArticles,
   fetchCommentsById,
   addCommentById,
+  addArticle,
 } = require("../models/articles.models");
 
 exports.getArticleById = (req, res, next) => {
@@ -18,8 +19,8 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  const { sort_by, order, topic } = req.query;
-  fetchArticles(sort_by, order, topic)
+  const { sort_by, order, topic, limit, page } = req.query;
+  fetchArticles(sort_by, order, topic, limit, page)
     .then((result) => {
       res.send({ articles: result });
     })
@@ -58,6 +59,17 @@ exports.postCommentById = (req, res, next) => {
   addCommentById(article_id, body, username)
     .then((result) => {
       res.send({ comment: result });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.postArticle = (req, res, next) => {
+  const input = req.body;
+  addArticle(input)
+    .then((result) => {
+      res.status(201).send({ article: result });
     })
     .catch((err) => {
       next(err);

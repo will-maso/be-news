@@ -39,12 +39,12 @@ exports.changeArticleById = (article_id, inc_votes) => {
   }
 };
 
-// db.query("SELECT ARRAY_AGG(topic) FROM articles ORDER BY topic");
-
 exports.fetchArticles = async (
   sort_by = "created_at",
   order = "desc",
-  topic
+  topic,
+  limit = 10,
+  p
 ) => {
   const queryValues = [];
   const Topics = await db.query("SELECT slug FROM topics;");
@@ -70,7 +70,11 @@ exports.fetchArticles = async (
     queryValues.push(topic);
   }
   querystr += ` GROUP BY articles.article_id`;
-  querystr += ` ORDER BY ${sort_by} ${order};`;
+  querystr += ` ORDER BY ${sort_by} ${order} LIMIT ${limit} `;
+  if (p) {
+    let offset = p * limit;
+    querystr += `OFFSET ${offset}`;
+  }
   if (topic) {
     if (queryValues.length) {
       const result = await db.query(querystr, queryValues);
@@ -121,5 +125,16 @@ exports.addCommentById = (article_id, body, username) => {
       } else {
         return Promise.reject({ status: 404, msg: "article not found" });
       }
+    });
+};
+
+exports.addArticle = (input) => {
+  return db
+    .query(
+      "INSERT INTO articles (author, title, body, topic) VALUES ($1, $2, $3, $4) RETURNING *",
+      [input.author, input.title, input.body, input.topic]
+    )
+    .then((result) => {
+      return result.rows[0];
     });
 };

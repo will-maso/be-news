@@ -526,3 +526,33 @@ describe("POST/articles", () => {
       .expect(400);
   });
 });
+
+describe("POST/topics", () => {
+  test("responds with newly added topic", () => {
+    return request(app)
+      .post("/api/topics")
+      .send({
+        slug: "cool",
+        description: "its cool",
+      })
+      .expect(201)
+      .then((result) => {
+        expect(result.body.topic).toMatchObject({
+          slug: "cool",
+          description: "its cool",
+        });
+      });
+  });
+  test("responds with correct error message for invalid body", () => {
+    return request(app)
+      .post("/api/topics")
+      .send({
+        snail: "cool",
+        description: "its slow",
+      })
+      .expect(400)
+      .then((result) => {
+        expect(result.text).toBe("Invalid patch body");
+      });
+  });
+});

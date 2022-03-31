@@ -560,7 +560,7 @@ describe("POST/topics", () => {
 describe("DELETE/api/articles/article_id", () => {
   test("works as intended when given correct id", () => {
     return request(app)
-      .delete("/api/articles/4")
+      .delete("/api/articles/1")
       .expect(204)
       .then((result) => {});
   });

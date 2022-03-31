@@ -391,3 +391,56 @@ describe("GET/users/:username", () => {
       });
   });
 });
+
+describe("PATCH/api/comments/:comment_id", () => {
+  test("responds with changed comment with correct input", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: 5 })
+      .expect(200)
+      .then((result) => {
+        expect(result.body.comment.comment_id).toBe(1);
+        expect(result.body.comment.votes).toBe(21);
+      });
+  });
+  test("responds with correct error message for datatype", () => {
+    return request(app)
+      .patch("/api/comments/cheese")
+      .send({
+        inc_votes: 1,
+      })
+      .expect(400)
+      .then((result) => {
+        expect(result.body).toEqual({
+          msg: "Invalid data type for body or request",
+        });
+      });
+  });
+  test("responds with correct error message for 404", () => {
+    return request(app)
+      .patch("/api/comments/9999")
+      .send({ inc_votes: 10 })
+      .expect(404)
+      .then((result) => {
+        expect(result.text).toBe("Comment not found");
+      });
+  });
+  test("responds with correct error message for incorrect patch body", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ votes: -10 })
+      .expect(400)
+      .then((result) => {
+        expect(result.text).toBe("Invalid PATCH body");
+      });
+  });
+  test("responds with correct error message for incorrect patch body", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ votes: -10 })
+      .expect(400)
+      .then((result) => {
+        expect(result.text).toBe("Invalid PATCH body");
+      });
+  });
+});

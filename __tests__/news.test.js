@@ -286,6 +286,14 @@ describe("GET/api/articles/:article_id/comments", () => {
         expect(result.body.comments.length).toBe(0);
       });
   });
+  test("responds with array of length one when limit set to one", () => {
+    return request(app)
+      .get("/api/articles/1/comments?limit=1")
+      .expect(200)
+      .then((result) => {
+        expect(result.body.comments.length).toBe(1);
+      });
+  });
 });
 
 describe("POST/api/articles/:article_id/comments", () => {

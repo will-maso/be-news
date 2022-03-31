@@ -87,13 +87,25 @@ exports.fetchArticles = async (
   return result.rows;
 };
 
-exports.fetchCommentsById = (article_id) => {
+exports.fetchCommentsById = (article_id, limit = 10, page) => {
   return db
     .query("SELECT * FROM articles WHERE article_id = $1;", [article_id])
     .then((result) => {
-      if (result.rows.length) {
+      if (result.rows.length && page) {
         return db
-          .query(`SELECT * FROM comments WHERE article_id = $1;`, [article_id])
+          .query(
+            `SELECT * FROM comments WHERE article_id = $1 LIMIT $2 OFFSET $3`,
+            [article_id, limit, page]
+          )
+          .then((result) => {
+            return result.rows;
+          });
+      } else if (result.rows.length) {
+        return db
+          .query(`SELECT * FROM comments WHERE article_id = $1 LIMIT $2`, [
+            article_id,
+            limit,
+          ])
           .then((result) => {
             return result.rows;
           });

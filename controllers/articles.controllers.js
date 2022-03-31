@@ -43,7 +43,8 @@ exports.patchArticleById = (req, res, next) => {
 
 exports.getCommentsById = (req, res, next) => {
   const { article_id } = req.params;
-  fetchCommentsById(article_id)
+  const { limit, page } = req.query;
+  fetchCommentsById(article_id, limit, page)
     .then((result) => {
       res.send({ comments: result });
     })

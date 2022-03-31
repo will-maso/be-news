@@ -556,3 +556,22 @@ describe("POST/topics", () => {
       });
   });
 });
+
+describe.only("DELETE/api/articles/article_id", () => {
+  test("works as intended when given correct id", () => {
+    return request(app)
+      .delete("/api/articles/4")
+      .expect(204)
+      .then((result) => {});
+  });
+  test("works as intended when given correct id", () => {
+    return request(app)
+      .delete("/api/articles/cheese")
+      .expect(400)
+      .then((result) => {
+        expect(result.body.msg).toEqual(
+          "Invalid data type for body or request"
+        );
+      });
+  });
+});

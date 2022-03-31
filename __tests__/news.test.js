@@ -557,7 +557,7 @@ describe("POST/topics", () => {
   });
 });
 
-describe.only("DELETE/api/articles/article_id", () => {
+describe("DELETE/api/articles/article_id", () => {
   test("works as intended when given correct id", () => {
     return request(app)
       .delete("/api/articles/4")

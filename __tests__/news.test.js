@@ -215,7 +215,9 @@ describe("GET/api/articles", () => {
     return request(app)
       .get("/api/articles?limit=1&page=1")
       .expect(200)
-      .then((result) => {});
+      .then((result) => {
+        expect(result.body.articles[0].total_count).toBe(1);
+      });
   });
   test("responds with correct results when limited and offset", () => {
     return request(app)

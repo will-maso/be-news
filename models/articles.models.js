@@ -61,7 +61,7 @@ exports.fetchArticles = async (
   if (!validsort_by.includes(sort_by) || !validorder.includes(order)) {
     return Promise.reject({ status: 400, msg: "incorrect sort_by or order" });
   }
-  let querystr = `SELECT articles.*, COUNT(comments.article_id)::INTEGER AS comment_count
+  let querystr = `SELECT articles.*,COUNT(articles.article_id)::INTEGER AS total_count ,COUNT(comments.article_id)::INTEGER AS comment_count
     FROM comments
     LEFT JOIN articles
     ON articles.article_id = comments.article_id`;

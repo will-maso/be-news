@@ -9,7 +9,7 @@ afterAll(() => db.end());
 beforeEach(() => seed(testData));
 
 describe("Get/api/topics", () => {
-  test("responds with an array of topic objects", () => {
+  test("200: responds with an array of topic objects of correct format", () => {
     return request(app)
       .get("/api/topics")
       .expect(200)
@@ -23,13 +23,13 @@ describe("Get/api/topics", () => {
         });
       });
   });
-  test("responds with correct error message for 404", () => {
+  test("404: responds with correct error message for 404", () => {
     return request(app).get("/api/slug").expect(404);
   });
 });
 
 describe("GET/api/articles/:article_id", () => {
-  test("responds with an article object", () => {
+  test("200: responds with an article object with correct format", () => {
     return request(app)
       .get("/api/articles/1")
       .expect(200)
@@ -47,7 +47,7 @@ describe("GET/api/articles/:article_id", () => {
         });
       });
   });
-  test("responds with correct error message for 404", () => {
+  test("404: responds with correct error message for 404", () => {
     return request(app)
       .get("/api/articles/9999")
       .expect(404)
@@ -56,7 +56,7 @@ describe("GET/api/articles/:article_id", () => {
 });
 
 describe("PATCH/api/articles/:article_id", () => {
-  test("responds with changed article", () => {
+  test("200: responds with changed article of correct format", () => {
     return request(app)
       .patch("/api/articles/1")
       .send({ inc_votes: 1 })
@@ -75,7 +75,7 @@ describe("PATCH/api/articles/:article_id", () => {
         expect(result.body.article.votes).toBe(101);
       });
   });
-  test("responds with changed article", () => {
+  test("200: responds with changed article with different input", () => {
     return request(app)
       .patch("/api/articles/1")
       .send({ inc_votes: -10 })
@@ -94,7 +94,7 @@ describe("PATCH/api/articles/:article_id", () => {
         expect(result.body.article.votes).toBe(90);
       });
   });
-  test("responds with correct error message for 404", () => {
+  test("404: responds with correct error message for 404", () => {
     return request(app)
       .patch("/api/articles/9999")
       .send({ inc_votes: 10 })
@@ -103,14 +103,14 @@ describe("PATCH/api/articles/:article_id", () => {
         expect(result.text).toBe("Article not found");
       });
   });
-  test("responds with correct error message for incorrect patch body", () => {
+  test("400: responds with correct error message for incorrect patch body", () => {
     return request(app)
       .patch("/api/articles/1")
       .send({ votes: -10 })
       .expect(400)
       .then((result) => {});
   });
-  test("responds with correct error message for incorrect patch body", () => {
+  test("400: responds with correct error message for different incorrect patch body", () => {
     return request(app)
       .patch("/api/articles/1")
       .send({ inc_votes: "cheese" })
@@ -120,7 +120,7 @@ describe("PATCH/api/articles/:article_id", () => {
 });
 
 describe("GET/api/users", () => {
-  test("responds with array of user objects with correct properties", () => {
+  test("200: responds with array of user objects with correct properties", () => {
     return request(app)
       .get("/api/users")
       .expect(200)
@@ -136,7 +136,7 @@ describe("GET/api/users", () => {
 });
 
 describe("GET/api/articles/article_id   comment count", () => {
-  test("responds with article object with correct comment count", () => {
+  test("200: responds with article object with correct comment count", () => {
     return request(app)
       .get("/api/articles/1")
       .expect(200)
@@ -157,7 +157,7 @@ describe("GET/api/articles/article_id   comment count", () => {
 });
 
 describe("GET/api/articles", () => {
-  test("response with array of article objects with correct properties", () => {
+  test("200: response with array of article objects with correct properties", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -176,7 +176,7 @@ describe("GET/api/articles", () => {
         });
       });
   });
-  test("endpoint works as intended with default queries", () => {
+  test("200: endpoint works as intended with default queries", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -187,7 +187,7 @@ describe("GET/api/articles", () => {
         });
       });
   });
-  test("endpoint works as intended with topic", () => {
+  test("200: endpoint works as intended with topic", () => {
     return request(app)
       .get("/api/articles?topic=cats")
       .expect(200)
@@ -195,7 +195,7 @@ describe("GET/api/articles", () => {
         expect(result.body.articles.length).toBe(1);
       });
   });
-  test("responds with correct error message for incorrect query", () => {
+  test("404: responds with correct error message for incorrect query", () => {
     return request(app)
       .get("/api/articles?topic=will")
       .expect(404)
@@ -203,7 +203,7 @@ describe("GET/api/articles", () => {
         expect(result.text).toBe("this topic does not exist");
       });
   });
-  test("responds with correct error message for incorrect datatype", () => {
+  test("400: responds with correct error message for incorrect datatype", () => {
     return request(app)
       .get("/api/articles?sort_by=2")
       .expect(400)
@@ -211,7 +211,7 @@ describe("GET/api/articles", () => {
         expect(result.text).toBe("incorrect sort_by or order");
       });
   });
-  test("responds with correct results when limited and offset", () => {
+  test("200: responds with correct results when limited and offset", () => {
     return request(app)
       .get("/api/articles?limit=1&page=1")
       .expect(200)
@@ -219,7 +219,7 @@ describe("GET/api/articles", () => {
         expect(result.body.articles[0].total_count).toBe(1);
       });
   });
-  test("responds with correct results when limited and offset", () => {
+  test("400: responds with correct error message when limited and offset", () => {
     return request(app)
       .get("/api/articles?limit=cheese&page=1")
       .expect(400)
@@ -229,7 +229,7 @@ describe("GET/api/articles", () => {
         });
       });
   });
-  test("responds with correct results when limited and offset", () => {
+  test("400: responds with correct error message when limited and offset", () => {
     return request(app)
       .get("/api/articles?limit=1&page=cheese")
       .expect(400)
@@ -242,7 +242,7 @@ describe("GET/api/articles", () => {
 });
 
 describe("GET/api/articles/:article_id/comments", () => {
-  test("responds with array of comments with correct properties", () => {
+  test("200: responds with array of comments with correct properties", () => {
     return request(app)
       .get("/api/articles/1/comments")
       .expect(200)
@@ -259,7 +259,7 @@ describe("GET/api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("responds with correct error message for datatype", () => {
+  test("400: responds with correct error message for datatype", () => {
     return request(app)
       .get("/api/articles/cheese/comments")
       .expect(400)
@@ -269,7 +269,7 @@ describe("GET/api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("responds with correct error message for 404", () => {
+  test("404: responds with correct error message for 404", () => {
     return request(app)
       .get("/api/articles/1000/comments")
       .expect(404)
@@ -277,7 +277,7 @@ describe("GET/api/articles/:article_id/comments", () => {
         expect(result.text).toBe("article not found");
       });
   });
-  test("responds with empty array for article without comments", () => {
+  test("200: responds with empty array for article without comments", () => {
     return request(app)
       .get("/api/articles/2/comments")
       .expect(200)
@@ -286,7 +286,7 @@ describe("GET/api/articles/:article_id/comments", () => {
         expect(result.body.comments.length).toBe(0);
       });
   });
-  test("responds with array of length one when limit set to one", () => {
+  test("200: responds with array of length one when limit set to one", () => {
     return request(app)
       .get("/api/articles/1/comments?limit=1")
       .expect(200)
@@ -297,7 +297,7 @@ describe("GET/api/articles/:article_id/comments", () => {
 });
 
 describe("POST/api/articles/:article_id/comments", () => {
-  test("responds with posted comment in correct format", () => {
+  test("200: responds with posted comment in correct format", () => {
     return request(app)
       .post("/api/articles/2/comments")
       .send({
@@ -316,7 +316,7 @@ describe("POST/api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("responds with correct error message for datatype", () => {
+  test("400: responds with correct error message for datatype", () => {
     return request(app)
       .post("/api/articles/cheese/comments")
       .send({
@@ -330,7 +330,7 @@ describe("POST/api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("responds with correct error message for 404", () => {
+  test("404: responds with correct error message for 404", () => {
     return request(app)
       .post("/api/articles/1000/comments")
       .send({
@@ -342,7 +342,7 @@ describe("POST/api/articles/:article_id/comments", () => {
         expect(result.text).toBe("article not found");
       });
   });
-  test("responds with correct error message for psql error", () => {
+  test("400: responds with correct error message for psql error", () => {
     return request(app)
       .post("/api/articles/1/comments")
       .send({
@@ -356,7 +356,7 @@ describe("POST/api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("responds with correct error message for incorrect username", () => {
+  test("400: responds with correct error message for incorrect username", () => {
     return request(app)
       .post("/api/articles/1/comments")
       .send({
@@ -373,19 +373,19 @@ describe("POST/api/articles/:article_id/comments", () => {
 });
 
 describe("DELETE/api/comments/:comment_id", () => {
-  test("works as intended", () => {
+  test("204: works as intended", () => {
     return request(app)
       .delete("/api/comments/1")
       .expect(204)
       .then(() => {});
   });
-  test("returns 404 not found for invalid comment_id", () => {
+  test("404: returns 404 not found for invalid comment_id", () => {
     return request(app)
       .delete("/api/comments/1000")
       .expect(404)
       .then(() => {});
   });
-  test("returns 400 for wrong datatype in comment_id", () => {
+  test("400: returns 400 for wrong datatype in comment_id", () => {
     return request(app)
       .delete("/api/comments/cheese")
       .expect(400)
@@ -394,7 +394,7 @@ describe("DELETE/api/comments/:comment_id", () => {
 });
 
 describe("GET/api", () => {
-  test("works as intended", () => {
+  test("200: responds with correct object", () => {
     return request(app)
       .get("/api")
       .expect(200)
@@ -405,7 +405,7 @@ describe("GET/api", () => {
 });
 
 describe("GET/users/:username", () => {
-  test("works as intended", () => {
+  test("200: responds with correct user with correct input", () => {
     return request(app)
       .get("/api/users/butter_bridge")
       .expect(200)
@@ -418,7 +418,7 @@ describe("GET/users/:username", () => {
         });
       });
   });
-  test("responds with correct error message for incorrect username", () => {
+  test("404: responds with correct error message for incorrect username", () => {
     return request(app)
       .get("/api/users/william")
       .expect(404)
@@ -429,7 +429,7 @@ describe("GET/users/:username", () => {
 });
 
 describe("PATCH/api/comments/:comment_id", () => {
-  test("responds with changed comment with correct input", () => {
+  test("200: responds with changed comment with correct input", () => {
     return request(app)
       .patch("/api/comments/1")
       .send({ inc_votes: 5 })
@@ -439,7 +439,7 @@ describe("PATCH/api/comments/:comment_id", () => {
         expect(result.body.comment.votes).toBe(21);
       });
   });
-  test("responds with correct error message for datatype", () => {
+  test("400: responds with correct error message for datatype", () => {
     return request(app)
       .patch("/api/comments/cheese")
       .send({
@@ -452,7 +452,7 @@ describe("PATCH/api/comments/:comment_id", () => {
         });
       });
   });
-  test("responds with correct error message for 404", () => {
+  test("404: responds with correct error message for 404", () => {
     return request(app)
       .patch("/api/comments/9999")
       .send({ inc_votes: 10 })
@@ -461,7 +461,7 @@ describe("PATCH/api/comments/:comment_id", () => {
         expect(result.text).toBe("Comment not found");
       });
   });
-  test("responds with correct error message for incorrect patch body", () => {
+  test("400: responds with correct error message for incorrect patch body", () => {
     return request(app)
       .patch("/api/comments/1")
       .send({ votes: -10 })
@@ -470,7 +470,7 @@ describe("PATCH/api/comments/:comment_id", () => {
         expect(result.text).toBe("Invalid PATCH body");
       });
   });
-  test("responds with correct error message for incorrect patch body", () => {
+  test("400: responds with correct error message for incorrect patch body", () => {
     return request(app)
       .patch("/api/comments/1")
       .send({ votes: -10 })
@@ -482,7 +482,7 @@ describe("PATCH/api/comments/:comment_id", () => {
 });
 
 describe("POST/articles", () => {
-  test("responds with posted article when given correct input", () => {
+  test("201: responds with posted article when given correct input", () => {
     return request(app)
       .post("/api/articles")
       .send({
@@ -504,7 +504,7 @@ describe("POST/articles", () => {
         });
       });
   });
-  test("responds with correct error messages", () => {
+  test("400: responds with correct error messages", () => {
     return request(app)
       .post("/api/articles")
       .send({
@@ -514,7 +514,7 @@ describe("POST/articles", () => {
       })
       .expect(400);
   });
-  test("responds with correct error messages", () => {
+  test("400: responds with correct error messages", () => {
     return request(app)
       .post("/api/articles")
       .send({
@@ -528,7 +528,7 @@ describe("POST/articles", () => {
 });
 
 describe("POST/topics", () => {
-  test("responds with newly added topic", () => {
+  test("201: responds with newly added topic", () => {
     return request(app)
       .post("/api/topics")
       .send({
@@ -543,7 +543,7 @@ describe("POST/topics", () => {
         });
       });
   });
-  test("responds with correct error message for invalid body", () => {
+  test("400: responds with correct error message for invalid body", () => {
     return request(app)
       .post("/api/topics")
       .send({
@@ -558,13 +558,13 @@ describe("POST/topics", () => {
 });
 
 describe("DELETE/api/articles/article_id", () => {
-  test("works as intended when given correct id", () => {
+  test("204: works as intended when given correct id", () => {
     return request(app)
       .delete("/api/articles/1")
       .expect(204)
       .then((result) => {});
   });
-  test("works as intended when given correct id", () => {
+  test("400: works as intended when given correct id", () => {
     return request(app)
       .delete("/api/articles/cheese")
       .expect(400)

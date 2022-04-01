@@ -25,6 +25,10 @@ const data = {
       ],
     },
   },
+  "DELETE/api/articles/:article_id": {
+    description: "returns a 204 status code after successful deletion",
+    exampleResponse: { "err.status": 204 },
+  },
   "DELETE/api/comments/:comment_id": {
     description: "returns 204 no content after successful deletion",
     exampleResponse: { "err.status": 204 },
@@ -46,6 +50,14 @@ const data = {
         username: "william",
       },
     ],
+  },
+  "GET/api/users/:username": {
+    description: "responds with a user object with the username inputted",
+    exampleResponse: {
+      username: "will",
+      avatar_url: "myUrl",
+      name: "william",
+    },
   },
   "GET/api/articles/:article_id/comments": {
     description: "returns an array of all comments for a given article id",
@@ -73,6 +85,35 @@ const data = {
       body: "this is my comment",
     },
   },
+  "POST/api/topics": {
+    description: "responds with newly posted topic",
+    exampleResponse: {
+      slug: "cats",
+      description: "cats are cool",
+    },
+    exampleBody: {
+      slug: "cats",
+      description: "cats are cool",
+    },
+  },
+  "POST/api/articles": {
+    description: "responds with newly posted article",
+    exampleResponse: {
+      author: "william",
+      title: "the saga",
+      article_id: 1,
+      body: "this is my article",
+      topic: "cats",
+      created_at: "2022-05-03",
+      votes: 0,
+    },
+    exampleBody: {
+      author: "william",
+      title: "the saga",
+      body: "this is my article",
+      topic: "cats",
+    },
+  },
   "PATCH/api/articles/:article_id": {
     description: "returns the updated object when given correct input",
     exampleResponse: {
@@ -85,6 +126,19 @@ const data = {
       votes: 100,
     },
     exampleBody: { inc_votes: 1 },
+  },
+  "PATCH/api/comments/:comment_id": {
+    description: "returns the newly updated object when given correct input",
+    exampleResponse: {
+      comment_id: 1,
+      votes: 5,
+      created_at: "2046-12-07",
+      author: "william",
+      body: "this is my comment",
+    },
+    exampleBody: {
+      inc_votes: 5,
+    },
   },
 };
 
